@@ -9,7 +9,6 @@ from scraper import scrape_schedule
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
-# Professional neutral palette with maroon accent
 BG_PAGE = "#F3F4F6"
 BG_SURFACE = "#FFFFFF"
 BG_CARD = "#FCFCFD"

@@ -55,26 +55,22 @@ def get_chrome_driver():
     options.add_argument("--disable-software-rasterizer")
     options.add_argument("--window-size=1920,1080")
     
-    # Block images to save massive amounts of RAM and load faster
     prefs = {"profile.managed_default_content_settings.images": 2}
     options.add_experimental_option("prefs", prefs)
     
-    # Check if running in Docker (Render deployment)
     if os.environ.get("RUNNING_IN_DOCKER"):
         options.binary_location = "/usr/bin/chromium"
         service = Service("/usr/bin/chromedriver")
         return webdriver.Chrome(service=service, options=options)
     else:
-        # Local execution (Desktop app testing)
         return webdriver.Chrome(options=options)
 
 def scrape_schedule(student_id: str, password: str, birthdate: str):
     driver = None
     try:
         driver = get_chrome_driver()
-        wait = WebDriverWait(driver, 25) # Increased wait time for slower portal loads
+        wait = WebDriverWait(driver, 25)
         
-        # ── LOGIN ─────────────────────────────────────
         driver.get(LOGIN_URL)
         wait.until(EC.presence_of_element_located((By.NAME, "username")))
 
@@ -101,11 +97,9 @@ def scrape_schedule(student_id: str, password: str, birthdate: str):
 
         wait.until(EC.url_changes(LOGIN_URL))
 
-        # Check if login failed (still on the login page)
         if "students/" == driver.current_url.split("aims/")[-1]:
             return {"success": False, "error": "Invalid credentials or portal timeout."}
 
-        # ── SCRAPE SCHEDULE ───────────────────────────
         driver.get(SCHED_URL)
         wait.until(EC.presence_of_element_located((By.CLASS_NAME, "dbtable")))
 
